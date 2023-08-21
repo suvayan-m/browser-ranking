@@ -5,7 +5,10 @@ const date = new Date().getFullYear();
 document.querySelector(".year").innerHTML = date;
 
 // INITIALIZATION
-const url = "https://privacytests.org/index.json";
+const url =
+  "https://corsproxy.io/?" +
+  encodeURIComponent("https://privacytests.org/index.json");
+// const url = "https://privacytests.org/index.json";
 const container = document.getElementById("browsers");
 let desktopBrowsers;
 let browser;
@@ -43,6 +46,7 @@ fetch(url)
 function getData() {
   desktopBrowsers.all_tests.forEach(function (browser, index) {
     browser = browser.browser;
+    if (document.querySelector(`#${browser}`)) return;
     for (const [key, _value] of Object.entries(
       desktopBrowsers.all_tests[`${index}`].testResults
     )) {
