@@ -5,9 +5,10 @@ const date = new Date().getFullYear();
 document.querySelector(".year").innerHTML = date;
 
 // INITIALIZATION
-const url =
-  "https://corsproxy.io/?" +
-  encodeURIComponent("https://privacytests.org/android.json");
+// const url =
+//   "https://corsproxy.io/?" +
+//   encodeURIComponent("https://privacytests.org/android.json");
+const url = "https://privacytests.org/android.json";
 // const url = "https://privacytests.org/android.json";
 const container = document.getElementById("browsers");
 let desktopBrowsers;
