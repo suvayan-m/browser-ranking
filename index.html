@@ -7,7 +7,6 @@
       name="description"
       content="Browser Ranking uses the JSON provided by the https://privacytests.org/ and ranks the web browsers for you so that you can save sometime and start using the best. This page lists the browsers for the desktop/laptop."
     />
-
     <link
       rel="apple-touch-icon"
       sizes="180x180"
@@ -43,68 +42,110 @@
     <script defer src="./index.js"></script>
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="./index.html">Browser Ranking</a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarSupportedContent"
-          aria-controls="navbarSupportedContent"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="#">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="./about.html">About</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="./android-browser.html"
-                >Android Browsers</a
-              >
-            </li>
-          </ul>
+    <header>
+      <div class="container my-5">
+        <div class="row my-5">
+          <div class="col text-center my-5">
+            <h1 class="my-5">
+              Enhance Your Browsing<br />
+              <span class="fs-2">Best Privacy Browsers</span>
+            </h1>
+            <p>
+              Discover the best privacy-respecting browsers that keep your data
+              secure and enhance your browsing experience. Find Your
+              Privacy-Perfect Browser Now!
+            </p>
+            <a href="#" class="btn">Browse Secure & Private Now</a>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col text-center">
+            <img src="img/chrome.svg" alt="" width="60" height="60" />
+            <img src="img/edge.svg" alt="" width="60" height="60" />
+            <img src="img/firefox.svg" alt="" width="60" height="60" />
+            <img src="img/brave.svg" alt="" width="60" height="60" />
+            <img src="img/opera.svg" alt="" width="60" height="60" />
+            <img src="img/safari.svg" alt="" width="60" height="60" />
+            <img src="img/samsung.svg" alt="" width="60" height="60" />
+          </div>
         </div>
       </div>
-    </nav>
-    <div class="container">
-      <div class="row mt-3 mb-5">
-        <div class="col">
-          <h1 class="text-center mb-3">Desktop Web Browser Ranking</h1>
-          <p class="text-center" id="score"></p>
+    </header>
+    <main>
+      <section class="section-desktop-browsers">
+        <div class="container">
+          <div class="row mb-5">
+            <div class="col">
+              <h2 class="text-center">Desktop Web Browser Ranking</h2>
+            </div>
+          </div>
+          <div class="row mb-5">
+            <div class="col-md-8 col-sm-6">
+              <h3 class="fs-3">At a<br /><span class="fs-1">Glance</span></h3>
+              <p>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum
+                incidunt provident eaque cumque quos. Hic, velit delectus atque
+                quia distinctio voluptas fugit, animi commodi quo autem officiis
+                placeat iste dignissimos!
+              </p>
+              <p>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Qui
+                iusto ipsam beatae quas possimus dolor minima deserunt tenetur
+                in repudiandae mollitia ut odio libero suscipit minus, ducimus
+                id debitis saepe.
+              </p>
+            </div>
+            <div class="col-md-4 col-sm-6">
+              <div class="card-glance" id="card-glance-browsers-desktop">
+                <ol></ol>
+              </div>
+            </div>
+          </div>
+          <div class="row gy-4 mb-5" id="browsers-desktop"></div>
         </div>
-      </div>
-      <div class="row" id="browsers"></div>
-    </div>
+      </section>
+      <section class="section-android-browsers">
+        <div class="container">
+          <div class="row mb-5">
+            <div class="col">
+              <h2 class="text-center">Android Web Browser Ranking</h2>
+            </div>
+          </div>
+          <div class="row mb-5">
+            <div class="col-md-4 col-sm-6">
+              <div class="card-glance" id="card-glance-browsers-android">
+                <ol></ol>
+              </div>
+            </div>
+            <div class="col-md-8 col-sm-6">
+              <h3 class="fs-3">At a<br /><span class="fs-1">Glance</span></h3>
+              <p>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum
+                incidunt provident eaque cumque quos. Hic, velit delectus atque
+                quia distinctio voluptas fugit, animi commodi quo autem officiis
+                placeat iste dignissimos!
+              </p>
+              <p>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Qui
+                iusto ipsam beatae quas possimus dolor minima deserunt tenetur
+                in repudiandae mollitia ut odio libero suscipit minus, ducimus
+                id debitis saepe.
+              </p>
+            </div>
+          </div>
+          <div class="row gy-4 mb-5" id="browsers-android"></div>
+        </div>
+      </section>
+    </main>
 
-    <div class="container">
-      <footer
-        class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top"
-      >
-        <p class="col-md-4 mb-0 text-muted">
-          &copy; <span class="year">2030</span> Created by Suvayan
-        </p>
-        <ul class="nav col-md-4 justify-content-end">
-          <li class="nav-item">
-            <a href="#" class="nav-link px-2 text-muted">Home</a>
-          </li>
-          <li class="nav-item">
-            <a href="./about.html" class="nav-link px-2 text-muted">About</a>
-          </li>
-          <li class="nav-item">
-            <a href="./android-browser.html" class="nav-link px-2 text-muted"
-              >Android Browsers</a
-            >
-          </li>
-        </ul>
-      </footer>
-    </div>
+    <footer>
+      <div class="container">
+        <div class="row py-3 border-top">
+          <div class="col">
+            <p class="">&copy; <span>2024</span> ✌ Made with &#9825;</p>
+          </div>
+        </div>
+      </div>
+    </footer>
   </body>
 </html>
