@@ -272,3 +272,10 @@ document.querySelectorAll('.card-glance').forEach(card => {
 // CALLING
 getAPIData('index.json', 'desktop');
 getAPIData('android.json', 'android');
+
+// TOGGLE LIGHT?DARK MODES
+const modeToggle = document.querySelector('.mode-toggler');
+const bodyEl = document.querySelector('body');
+modeToggle.addEventListener('click', function () {
+  bodyEl.classList.toggle('mode-light');
+});

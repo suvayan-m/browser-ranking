@@ -1,75 +1,69 @@
-/* #score {
-  text-transform: uppercase;
-  font-weight: 600;
-  font-size: 1.5rem;
-} */
-
-/* .container-item {
-  padding: 1rem;
-} */
-
-/* .item {
-  display: grid;
-  offset-x | offset-y | blur-radius | spread-radius | color
-  box-shadow: 0px 2px 3px 2px rgba(0, 0, 0, 0.2);
-} */
-
-/* .container-img {
-  height: 10rem;
-  width: 10rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  justify-self: center;
-} */
-
-/* img {
-  width: 100%;
-} */
-
-/* h2 {
-  justify-self: center;
-} */
-
-/* .results {
-  margin: 0;
-  font-weight: 600;
-  font-size: 1.1rem;
-} */
-
+:root {
+  --color-bg-dark: #343a40;
+  --shadow-1: 0 0 25px rgba(248, 249, 250, 0.1);
+  --border-1: 1px solid #495057;
+  --border-2: 2px solid #495057;
+  --font-fam-1: 'Shadows Into Light', cursive;
+  --font-fam-2: 'Inter', sans-serif;
+  --font-fam-3: monospace;
+  --color-text-dark: #f8f9fa;
+  --text-light: #f8f9fa;
+}
+.mode-light {
+  --color-text-dark: #343a40;
+  --color-bg-dark: #f8f9fa;
+  --shadow-1: 0 0 25px rgba(52, 58, 64, 0.1);
+  --border-1: 1px solid #495057;
+  --border-2: 2px solid #ced4da;
+}
+.header {
+  padding: 8rem 0;
+  position: relative;
+}
+.mode-toggler {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background-color: transparent;
+  border: none;
+}
+.mode-toggler svg {
+  width: 8rem;
+  stroke: var(--color-text-dark);
+  fill: var(--color-text-dark);
+}
 a {
   display: inline-block;
   text-decoration: none;
-  color: inherit;
+  color: var(--color-text-dark);
 }
 .btn {
-  color: white;
-  border: 1px solid #495057;
+  color: var(--color-text-dark);
+  border: var(--border-2);
 }
 .btn:hover {
-  color: white;
-  border: 1px solid #495057;
-  box-shadow: 0 0 25px rgba(52, 58, 64, 0.5);
+  color: var(--color-text-dark);
+  border: var(--border-2);
+  box-shadow: var(--shadow-1);
 }
-
 .browser-card.highlight {
   border-color: #f1c40f;
   box-shadow: 0 0 25px rgba(241, 196, 15, 0.5);
 }
 /* UIUX UPDATE NEW */
 body {
-  font-family: monospace;
-  /* padding: 1rem; */
-  background-color: #212529;
-  color: #f8f9fa;
+  font-family: var(--font-fam-2);
+  background-color: var(--color-bg-dark);
+  color: var(--color-text-dark);
 }
 
 .browser-card {
   border-radius: 1rem;
-  border: 2px solid #495057;
+  border: var(--border-2);
   padding: 1rem;
   position: relative;
-  box-shadow: 0 0 25px rgba(52, 58, 64, 0.5);
+  /* box-shadow: 0 0 25px rgba(52, 58, 64, 0.5); */
+  box-shadow: var(--shadow-1);
   transition: border-color 0.5s, box-shadow 0.5s, transform 0.2s;
 }
 .browser-card:hover {
@@ -83,7 +77,8 @@ body {
   font-size: 1.5rem;
   height: 2.5rem;
   width: 2.5rem;
-  background-color: #000;
+  background-color: var(--color-bg-dark);
+  color: var(--text-light);
   font-family: monospace;
   display: flex;
   justify-content: center;
@@ -104,7 +99,7 @@ body {
   -webkit-box-orient: vertical;
 }
 .card-glance {
-  border: 1px solid #eee;
+  border: 1px solid var(--color-text-dark);
   position: relative;
   padding: 2rem;
 }
