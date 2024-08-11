@@ -70,6 +70,7 @@ function getData() {
               <img
                 src="./img/${browser}.svg"
                 alt="logo of ${browser} browser in svg format"
+                onerror="this.src='./img/${browser}.png';this.alt='logo of ${browser} browser in png format';"
               />
             </div>
             <h2 class="mb-3">${browser[0].toUpperCase()}${browser.slice(1)}</h2>
