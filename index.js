@@ -1,17 +1,28 @@
 'use strict';
 
-// SELECTORS
-const androidGlance = document.querySelector(
-  '#card-glance-browsers-android ol'
-);
-const androidBrowsers = document.querySelector('#browsers-android');
-const desktopGlance = document.querySelector(
-  '#card-glance-browsers-desktop ol'
-);
-const desktopBrowsers = document.querySelector('#browsers-desktop');
+// --- CONFIGURATION AND CONSTANTS ---
 
-// CUSTOM BROWSER DATA DESCRIPTION, WEBSITE...
-const data = {
+// API Configuration
+const BASE_URL = 'https://privacytests.org/';
+const ANDROID_ENDPOINT = 'android.json';
+const DESKTOP_ENDPOINT = 'index.json';
+
+// Utility for score-based color coding
+const SCORE_COLORS = [
+  { min: 91, bg: '#16a34a', color: '#f0fdf4' }, // green-600
+  { min: 81, bg: '#22c55e', color: '#f0fdf4' }, // green-500
+  { min: 71, bg: '#4ade80', color: '#064e3b' }, // green-400
+  { min: 61, bg: '#86efac', color: '#052e16' }, // green-300
+  { min: 51, bg: '#facc15', color: '#78350f' }, // yellow-400
+  { min: 41, bg: '#fbbf24', color: '#78350f' }, // yellow-500
+  { min: 31, bg: '#f97316', color: '#fff7ed' }, // orange-500
+  { min: 21, bg: '#ea580c', color: '#fff7ed' }, // orange-600
+  { min: 11, bg: '#dc2626', color: '#fef2f2' }, // red-600
+  { min: 0, bg: '#b91c1c', color: '#fef2f2' }, // red-700 (default)
+];
+
+// Custom Browser Data
+const BROWSER_DATA = {
   brave: {
     website: 'https://brave.com/',
     description:
@@ -47,6 +58,7 @@ const data = {
     description:
       'LibreWolf is a privacy-focused fork of Firefox, emphasizing user control, privacy enhancements, and removal of proprietary components.',
   },
+  // NOTE: Mullvad is a VPN, the data might be for a related project or an error.
   mullvad: {
     website: 'https://mullvad.net/en',
     description:
@@ -92,190 +104,289 @@ const data = {
     description:
       'Yandex Browser is popular in Russia and offers features like Turbo mode (data compression), built-in security, and personalized recommendations.',
   },
+  cromite: {
+    website: 'https://github.com/uazo/cromite',
+    description:
+      'Cromite Browser is a privacy-focused Chromium fork for Android, designed to block ads and reduce tracking. It builds on Bromite’s foundation, removing Google integrations and adding features like anti-fingerprinting, DNS customization, and user-agent spoofing. Cromite is lightweight, fast, and ideal for users who want a hardened mobile browser without sacrificing usability.',
+  },
 };
 
-// INITIALIZATION & VARIABLES
-// const url = "https://privacytests.org/index.json";
-const url = 'index.json';
-let passes = 0;
-let fails = 0;
-let unsupported = 0;
-let unsupportedFalse = 0;
-let testFailed = 0;
-let testFailedFalse = 0;
+// --- DOM ELEMENTS ---
 
-// FETCH API DATA
-const getAPIData = async function (url, placeData) {
-  try {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('Something went wrong. Try again later :(');
-    const data = await res.json();
-    // FIND UNIQUE AND REMOVE DUBLICATES
-    findUnique(data, placeData);
-  } catch (e) {
-    console.error(e.message);
+// Glance View lists
+const androidGlanceList = document.querySelector(
+  '#card-glance-browsers-android ol'
+);
+const desktopGlanceList = document.querySelector(
+  '#card-glance-browsers-desktop ol'
+);
+// Full Browser View containers
+const androidBrowsersContainer = document.querySelector('#browsers-android');
+const desktopBrowsersContainer = document.querySelector('#browsers-desktop');
+const bodyEl = document.querySelector('body');
+const modeToggle = document.querySelector('.mode-toggler');
+
+// --- UTILITY FUNCTIONS ---
+
+/**
+ * Capitalizes the first letter of a string.
+ * @param {string} str - The input string.
+ * @returns {string} The capitalized string.
+ */
+const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1);
+
+/**
+ * Calculates a browser's score based on its test results.
+ * @param {object} browser - A browser object containing testResults.
+ */
+const calculateScore = browser => {
+  let passes = 0;
+  let fails = 0;
+  let unsupported = 0;
+  let unsupportedFalse = 0;
+  let testFailed = 0;
+  let testFailedFalse = 0;
+
+  for (const groupKey of Object.keys(browser.testResults)) {
+    const testGroup = browser.testResults[groupKey];
+    for (const testKey of Object.keys(testGroup)) {
+      const testResult = testGroup[testKey];
+
+      // Direct comparison with boolean, more robust than checking string 'true'/'false'
+      if (testResult.passed === true) passes++;
+      if (testResult.passed === false) fails++;
+      if (testResult.unsupported === true) unsupported++;
+      if (testResult.unsupportedFalse === false) unsupportedFalse++; // Note: Check on logic 'unsupportedFalse === false'
+      if (testResult.testFailed === true) testFailed++;
+      if (testResult.testFailedFalse === false) testFailedFalse++; // Note: Check on logic 'testFailedFalse === false'
+    }
   }
+
+  const totalTests =
+    passes +
+    fails +
+    unsupported +
+    unsupportedFalse +
+    testFailed +
+    testFailedFalse;
+
+  browser.generatedScore = (
+    totalTests > 0 ? (passes / totalTests) * 100 : 0
+  ).toFixed(0);
 };
 
-// FIND UNIQUE AND REMOVE DUBLICATES
-function findUnique(data, placeData) {
+/**
+ * Finds unique browsers from the API data, calculates their scores, and sorts them.
+ * @param {object} data - The raw API data object.
+ * @returns {Array<object>} The sorted array of unique browser objects.
+ */
+const processBrowserData = data => {
+  // Find unique browsers by name and keep the latest entry for each
   const uniqueBrowsers = [
     ...new Set(data.all_tests.map(obj => obj.browser)),
   ].map(name => data.all_tests.find(obj => obj.browser === name));
 
-  // GENERATE SCORES
-  genScores(uniqueBrowsers, placeData);
-}
+  // Generate scores for each unique browser
+  uniqueBrowsers.forEach(calculateScore);
 
-// GENERATE SCORES
-function genScores(uniqueBrowsers, placeData) {
-  uniqueBrowsers.forEach(browser => {
-    for (const [key, _value] of Object.entries(browser.testResults)) {
-      for (const [_key, valueTest] of Object.entries(
-        browser.testResults[key]
-      )) {
-        if (`${valueTest.passed}` === 'true') passes++;
-        if (`${valueTest.passed}` === 'false') fails++;
-        if (`${valueTest.unsupported}` === 'true') unsupported++;
-        if (`${valueTest.unsupportedFalse}` === 'false') unsupportedFalse++;
-        if (`${valueTest.testFailed}` === 'true') testFailed++;
-        if (`${valueTest.testFailedFalse}` === 'false') testFailedFalse++;
-        browser.generatedScore = (
-          (passes /
-            (passes +
-              fails +
-              unsupported +
-              unsupportedFalse +
-              testFailed +
-              testFailedFalse)) *
-          100
-        ).toFixed(0);
-      }
-    }
-    passes =
-      fails =
-      unsupported =
-      unsupportedFalse =
-      testFailed =
-      testFailedFalse =
-        0;
-  });
-
-  // SORT BROWSERS ACCORDING TO THEIR SCORES
-  sortBrowsers(uniqueBrowsers, placeData);
-}
-
-// SORT BROWSERS ACCORDING TO THEIR SCORES
-function sortBrowsers(uniqueBrowsers, placeData) {
+  // Sort browsers by score (descending)
   uniqueBrowsers.sort((a, b) => b.generatedScore - a.generatedScore);
 
-  // RENDERS BROWSERS
-  renderData(uniqueBrowsers, placeData);
+  return uniqueBrowsers;
+};
 
-  // RENDERS GLANCE VIEW
-  renderGlance(uniqueBrowsers, placeData);
-}
+// --- RENDERING FUNCTIONS ---
 
-// RENDERS BROWSERS
-function renderData(uniqueBrowsers, placeData) {
+/**
+ * Determines the correct DOM element based on platform type ('desktop' or 'android').
+ * @param {string} platform - 'desktop' or 'android'.
+ * @param {boolean} isGlance - True for glance list (ol), false for main container (div).
+ * @returns {HTMLElement|null} The corresponding DOM element.
+ */
+const getContainerElement = (platform, isGlance = false) => {
+  if (platform === 'desktop') {
+    return isGlance ? desktopGlanceList : desktopBrowsersContainer;
+  }
+  if (platform === 'android') {
+    return isGlance ? androidGlanceList : androidBrowsersContainer;
+  }
+  return null;
+};
+
+/**
+ * Renders the full browser card view.
+ * @param {Array<object>} uniqueBrowsers - Sorted browser data.
+ * @param {string} platform - 'desktop' or 'android'.
+ */
+function renderBrowserCards(uniqueBrowsers, platform) {
+  const container = getContainerElement(platform, false);
+  if (!container) return; // Exit if container not found
+
   uniqueBrowsers.forEach(browser => {
     const brw = browser.browser;
-    const html = `    
-    <div class="container-item col-lg-4 col-md-6">
-      <a href="${data[brw].website}" target="_blank" rel="noopener noreferrer">
-        <div class="browser-card" id="${placeData}-${brw}">
-          <div class="score">${browser.generatedScore}</div>
-          <div class="row">
-            <div class="col-3">
-              <img
-                src="./img/${brw}.svg"
-                alt="logo of ${brw} browser in svg format"
-                onerror="this.src='./img/${brw}.png';this.alt='logo of ${brw} browser in png format';"
-              />
-            </div>
-            <div class="col-9">
-              <h3>${brw[0].toUpperCase()}${brw.slice(1)}</h3>
-              <p class="description" title="${data[brw].description}">
-                ${data[brw].description}
-              </p>
+    const browserInfo = BROWSER_DATA[brw] || {
+      website: '#',
+      description: 'No data available.',
+    };
+
+    // Destructuring for cleaner access
+    const { website, description } = browserInfo;
+    const capitalizedName = capitalize(brw);
+
+    const html = ` 	 	
+      <div class="container-item col-lg-4 col-md-6">
+        <a href="${website}" target="_blank" rel="noopener noreferrer">
+          <div class="browser-card" id="${platform}-${brw}">
+            <div class="score">${browser.generatedScore}</div>
+            <div class="row">
+              <div class="col-3">
+                <img
+                  src="./img/${brw}.svg"
+                  alt="logo of ${brw} browser in svg format"
+                  onerror="this.src='./img/${brw}.png';this.alt='logo of ${brw} browser in png format';"
+                />
+              </div>
+              <div class="col-9">
+                <h3>${capitalizedName}</h3>
+                <p class="description" title="${description}">
+                  ${description}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-      </a>
-    </div>    
-    `;
-    const placeAt =
-      placeData === 'desktop'
-        ? desktopBrowsers
-        : placeData === 'android'
-        ? androidBrowsers
-        : null;
-
-    placeAt.insertAdjacentHTML('beforeend', html);
+        </a>
+      </div> 	 	
+      `;
+    container.insertAdjacentHTML('beforeend', html);
   });
 }
 
-// RENDERS GLANCE VIEW
-function renderGlance(uniqueBrowsers, placeData) {
+/**
+ * Renders the "Glance View" list of top browsers.
+ * Also calls the score color application.
+ * @param {Array<object>} uniqueBrowsers - Sorted browser data.
+ * @param {string} platform - 'desktop' or 'android'.
+ */
+function renderGlanceView(uniqueBrowsers, platform) {
+  const container = getContainerElement(platform, true);
+  if (!container) return; // Exit if container not found
+
   uniqueBrowsers.forEach((browser, i) => {
-    console.log(browser);
-    const html = `    
-    <li>
-      <a href="#${placeData}-${browser.browser}" class="link-browser">
-        <span class="medal"
-          >${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : ''}
-        </span>
-        ${browser.browser[0].toUpperCase()}${browser.browser.slice(1)}: ${
-      browser.generatedScore
-    }
-      </a>
-    </li>    
-    `;
-    const placeAt =
-      placeData === 'desktop'
-        ? desktopGlance
-        : placeData === 'android'
-        ? androidGlance
-        : null;
+    const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '';
 
-    placeAt.insertAdjacentHTML('beforeend', html);
+    const html = ` 	 	
+      <li>
+        <a href="#${platform}-${browser.browser}" class="link-browser">
+          <span class="medal">${medal}</span>
+          ${capitalize(browser.browser)}: ${browser.generatedScore}
+        </a>
+      </li> 	 	
+      `;
+    container.insertAdjacentHTML('beforeend', html);
   });
 
-  // COLOR AS PER SCORE
-  const scores = document.querySelectorAll('.score');
-  scores.forEach(score => {
-    if (Number(score.innerHTML) < 15) score.style.backgroundColor = '#c92a2a';
-    if (Number(score.innerHTML) > 15) score.style.backgroundColor = '#c92a2a';
-    if (Number(score.innerHTML) > 30) score.style.backgroundColor = '#e67700';
-    if (Number(score.innerHTML) > 45) score.style.backgroundColor = '#fcc419';
-    if (Number(score.innerHTML) > 60) score.style.backgroundColor = '#2b8a3e';
-    if (Number(score.innerHTML) > 75) score.style.backgroundColor = '#37b24d';
+  // Apply colors after all browsers are rendered
+  if (platform === 'desktop') applyScoreColors();
+}
+
+/**
+ * Applies background and text color to score elements based on their value.
+ */
+function applyScoreColors() {
+  document.querySelectorAll('.score').forEach(scoreEl => {
+    const value = Number(scoreEl.textContent);
+
+    // Find the first matching color rule
+    const colorRule = SCORE_COLORS.find(rule => value >= rule.min);
+
+    if (colorRule) {
+      scoreEl.style.backgroundColor = colorRule.bg;
+      scoreEl.style.color = colorRule.color;
+    }
+    // No else needed, as the last rule covers min: 0
   });
 }
 
-// HIGHLIGHTING EFFECT
-document.querySelectorAll('.card-glance').forEach(card => {
-  card.addEventListener('click', function (e) {
-    if (e.target.classList.contains('link-browser')) {
-      document
-        .querySelector(`${e.target.getAttribute('href')}`)
-        .classList.add('highlight');
-      setTimeout(() => {
-        document
-          .querySelector(`${e.target.getAttribute('href')}`)
-          .classList.remove('highlight');
-      }, '2000');
-    }
+// --- CORE LOGIC ---
+
+/**
+ * Fetches API data, processes it, and initiates rendering.
+ * @param {string} url - The full API URL.
+ * @param {string} platform - 'desktop' or 'android'.
+ */
+const getAPIData = async (url, platform) => {
+  try {
+    const res = await fetch(url);
+    if (!res.ok)
+      throw new Error(
+        `HTTP error! Status: ${res.status} for ${platform} data.`
+      );
+
+    const data = await res.json();
+
+    // Process data: find unique, calculate scores, sort
+    const uniqueBrowsers = processBrowserData(data);
+
+    // Render both views
+    renderBrowserCards(uniqueBrowsers, platform);
+    renderGlanceView(uniqueBrowsers, platform);
+  } catch (e) {
+    console.error(`Failed to fetch or process ${platform} data:`, e.message);
+    // User-facing error message could be added here
+  }
+};
+
+// --- EVENT LISTENERS ---
+
+/**
+ * Adds the temporary highlight effect when clicking a browser link in the glance view.
+ */
+const setupHighlighting = () => {
+  document.querySelectorAll('.card-glance').forEach(card => {
+    card.addEventListener('click', function (e) {
+      // Ensure the click was on the link, not the card parent
+      if (e.target.closest('.link-browser')) {
+        const link = e.target.closest('.link-browser');
+        const targetSelector = link.getAttribute('href');
+        const targetElement = document.querySelector(targetSelector);
+
+        if (targetElement) {
+          targetElement.classList.add('highlight');
+
+          // Use a function reference for better memory management than an anonymous arrow function
+          const removeHighlight = () =>
+            targetElement.classList.remove('highlight');
+
+          setTimeout(removeHighlight, 2000);
+        }
+      }
+    });
   });
-});
+};
 
-// CALLING
-getAPIData('index.json', 'desktop');
-getAPIData('android.json', 'android');
+/**
+ * Sets up the light/dark mode toggle functionality.
+ */
+const setupModeToggle = () => {
+  modeToggle.addEventListener('click', () => {
+    bodyEl.classList.toggle('mode-light');
+  });
+};
 
-// TOGGLE LIGHT?DARK MODES
-const modeToggle = document.querySelector('.mode-toggler');
-const bodyEl = document.querySelector('body');
-modeToggle.addEventListener('click', function () {
-  bodyEl.classList.toggle('mode-light');
-});
+// --- INITIALIZATION ---
+
+/**
+ * Runs the main application logic.
+ */
+const init = () => {
+  // Fetch and render data for both platforms
+  getAPIData(`${BASE_URL}${DESKTOP_ENDPOINT}`, 'desktop');
+  getAPIData(`${BASE_URL}${ANDROID_ENDPOINT}`, 'android');
+
+  // Set up all interactive listeners
+  setupHighlighting();
+  setupModeToggle();
+};
+
+// Start the application
+init();

@@ -84,12 +84,13 @@ body {
   justify-content: center;
   align-items: center;
   border-radius: 50%;
+  border: 3px dashed var(--color-bg-dark);
 }
 .browser-card img {
   width: 100%;
   height: auto;
 }
-.description {
+.browser-card .description {
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
@@ -97,11 +98,14 @@ body {
   /* max-height: 32px; Set the maximum height for N lines */
   -webkit-line-clamp: 3; /* Specify the number of lines to be displayed */
   -webkit-box-orient: vertical;
+  margin-bottom: 0;
+  font-size: 14px;
 }
 .card-glance {
-  border: 1px solid var(--color-text-dark);
+  border: 1px dashed var(--color-text-dark);
   position: relative;
   padding: 2rem;
+  border-radius: 2rem;
 }
 .card-glance ol {
   list-style: none;
@@ -125,3 +129,9 @@ body {
   z-index: 1;
 } */
 /* UIUX UPDATE NEW */
+@media (max-width: 575px) {
+  .header {
+    padding-top: 8rem;
+    padding-bottom: 4rem;
+  }
+}
