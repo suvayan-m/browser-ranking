@@ -1,47 +1,137 @@
-#score {
-  text-transform: uppercase;
-  font-weight: 600;
-  font-size: 1.5rem;
+:root {
+  --color-bg-dark: #343a40;
+  --shadow-1: 0 0 25px rgba(248, 249, 250, 0.1);
+  --border-1: 1px solid #495057;
+  --border-2: 2px solid #495057;
+  --font-fam-1: 'Shadows Into Light', cursive;
+  --font-fam-2: 'Inter', sans-serif;
+  --font-fam-3: monospace;
+  --color-text-dark: #f8f9fa;
+  --text-light: #f8f9fa;
 }
-
-.container-item {
-  padding: 1rem;
+.mode-light {
+  --color-text-dark: #343a40;
+  --color-bg-dark: #f8f9fa;
+  --shadow-1: 0 0 25px rgba(52, 58, 64, 0.1);
+  --border-1: 1px solid #495057;
+  --border-2: 2px solid #ced4da;
 }
-
-.item {
-  display: grid;
-  /* offset-x | offset-y | blur-radius | spread-radius | color */
-  box-shadow: 0px 2px 3px 2px rgba(0, 0, 0, 0.2);
+.header {
+  padding: 8rem 0;
+  position: relative;
 }
-
-.container-img {
-  height: 10rem;
-  width: 10rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  justify-self: center;
+.mode-toggler {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background-color: transparent;
+  border: none;
 }
-
-img {
-  width: 100%;
+.mode-toggler svg {
+  width: 8rem;
+  stroke: var(--color-text-dark);
+  fill: var(--color-text-dark);
 }
-
-h2 {
-  justify-self: center;
-}
-
-.results {
-  margin: 0;
-  font-weight: 600;
-  font-size: 1.1rem;
-}
-
 a {
   display: inline-block;
   text-decoration: none;
+  color: var(--color-text-dark);
+}
+.btn {
+  color: var(--color-text-dark);
+  border: var(--border-2);
+}
+.btn:hover {
+  color: var(--color-text-dark);
+  border: var(--border-2);
+  box-shadow: var(--shadow-1);
+}
+.browser-card.highlight {
+  border-color: #f1c40f;
+  box-shadow: 0 0 25px rgba(241, 196, 15, 0.5);
+}
+/* UIUX UPDATE NEW */
+body {
+  font-family: var(--font-fam-2);
+  background-color: var(--color-bg-dark);
+  color: var(--color-text-dark);
 }
 
-.highlight {
-  background-color: #f7d794;
+.browser-card {
+  border-radius: 1rem;
+  border: var(--border-2);
+  padding: 1rem;
+  position: relative;
+  /* box-shadow: 0 0 25px rgba(52, 58, 64, 0.5); */
+  box-shadow: var(--shadow-1);
+  transition: border-color 0.5s, box-shadow 0.5s, transform 0.2s;
+}
+.browser-card:hover {
+  transform: scale(1.05);
+}
+.browser-card .score {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  font-weight: 900;
+  font-size: 1.5rem;
+  height: 2.5rem;
+  width: 2.5rem;
+  background-color: var(--color-bg-dark);
+  color: var(--text-light);
+  font-family: monospace;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  border: 3px dashed var(--color-bg-dark);
+}
+.browser-card img {
+  width: 100%;
+  height: auto;
+}
+.browser-card .description {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  /* line-height: 16px; Set the desired line height */
+  /* max-height: 32px; Set the maximum height for N lines */
+  -webkit-line-clamp: 3; /* Specify the number of lines to be displayed */
+  -webkit-box-orient: vertical;
+  margin-bottom: 0;
+  font-size: 14px;
+}
+.card-glance {
+  border: 1px dashed var(--color-text-dark);
+  position: relative;
+  padding: 2rem;
+  border-radius: 2rem;
+}
+.card-glance ol {
+  list-style: none;
+}
+.card-glance ol li {
+  position: relative;
+  margin-bottom: 0.5rem;
+}
+.card-glance ol .medal {
+  position: absolute;
+  left: -2rem;
+}
+/* .card-glance::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0.5rem;
+  left: 0.5rem;
+  border: 1px solid rgba(170, 170, 170, 0.5);
+  z-index: 1;
+} */
+/* UIUX UPDATE NEW */
+@media (max-width: 575px) {
+  .header {
+    padding-top: 8rem;
+    padding-bottom: 4rem;
+  }
 }
